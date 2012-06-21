@@ -1,3 +1,5 @@
+package martello;
+
 import java.io.*;
 import java.net.*;
 import java.nio.*;
@@ -12,7 +14,7 @@ public class Sender {
         this.port = 1337;
     }
 
-    public static void main(String[] args) {
+    public static void something() {
         ExecutorService service = Executors.newCachedThreadPool();
         try {
             MulticastSocket s = new MulticastSocket(1337);
