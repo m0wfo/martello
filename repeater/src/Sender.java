@@ -15,7 +15,7 @@ public class Sender {
     }
 
     public static void something() {
-        ExecutorService service = Executors.newCachedThreadPool();
+        
         try {
             MulticastSocket s = new MulticastSocket(1337);
 
@@ -33,13 +33,6 @@ public class Sender {
         } catch (IOException e) {
             System.out.println("iox" + e);
             System.exit(-1); }
-        
-        try {
-            service.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-        } catch (InterruptedException e) {
-            System.out.println("bye");
-            System.exit(0);
-        }
     }
 
 }
