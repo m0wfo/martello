@@ -2,37 +2,46 @@ package martello;
 
 import java.io.*;
 import java.net.*;
-import java.nio.*;
-import java.nio.channels.*;
-import java.util.concurrent.*;
+import java.util.*;
 
-public class Forwarder {
+public class Forwarder extends BaseConnector {
 
-    private int port;
+    private List<DatagramSocket> repeaters;
 
     public Forwarder() {
-        this.port = 1337;
+        super("0.0.0.0", Repeater.F_PORT, false);
+        repeaters = new ArrayList<DatagramSocket>();
     }
 
-    public static void something() {
-        
+    protected Runnable handler(final DatagramPacket incoming) {
+        return new Runnable() {
+            public void run() {
+                Repeater.listener.shoutMessage(incoming);
+            }
+        };
+    }
+
+    public void addRepeater(String address) {
         try {
-            MulticastSocket s = new MulticastSocket(1337);
-
+            InetAddress addr = InetAddress.getByName(address);
             try {
-                InetAddress group = InetAddress.getByName("238.0.0.123");
-                s.joinGroup(group);
+                DatagramSocket repeater = new DatagramSocket();
+                repeater.connect(addr, port);
+                if (repeaters.add(repeater)) System.out.println("Added repeater " + address);
+            } catch (SocketException e) {}
+        } catch (UnknownHostException e) {}
+        
+    }
 
-                String msg = "ello";
-                DatagramPacket hi = new DatagramPacket(msg.getBytes(), msg.length(),
-                                                       group, 1337);
-                s.send(hi);
-            } catch (UnknownHostException e) {
-                System.out.println("uhost");
-                System.exit(-1); }
-        } catch (IOException e) {
-            System.out.println("iox" + e);
-            System.exit(-1); }
+    public void tell(DatagramPacket msg) {
+        msg.setPort(port);
+        Iterator<DatagramSocket> r = repeaters.iterator();
+        while (r.hasNext()) {
+            DatagramSocket sock = r.next();
+            try {
+                sock.send(msg);
+            } catch (IOException e) {}
+        }
     }
 
 }
