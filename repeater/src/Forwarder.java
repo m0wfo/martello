@@ -6,11 +6,11 @@ import java.nio.*;
 import java.nio.channels.*;
 import java.util.concurrent.*;
 
-public class Sender {
+public class Forwarder {
 
     private int port;
 
-    public Sender() {
+    public Forwarder() {
         this.port = 1337;
     }
 
